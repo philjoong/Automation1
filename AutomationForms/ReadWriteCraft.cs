@@ -79,6 +79,7 @@ namespace AutomationForms
             int dataLength = craftData.GetLength(0);
             string tempString;
             double? tempDouble;
+            bool? tempbool;
             for (int i = 1; i < dataLength + 1; i++)
             {
                 for (int j = 1; j < 27; j++)
@@ -92,6 +93,11 @@ namespace AutomationForms
                     {
                         tempDouble = craftData[i, j] as double?;
                         workSheet.Cells[i + writeRow - 1, j] = tempDouble;
+                    }
+                    else if (craftData[i, j] is bool)
+                    {
+                        tempbool = craftData[i, j] as bool?;
+                        workSheet.Cells[i + writeRow - 1, j] = tempbool;
                     }
                     else
                     {

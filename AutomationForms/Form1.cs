@@ -269,7 +269,10 @@ namespace AutomationForms
             int SecondCol = 4;
             // itemData{(0)Sub Category,(1)상품 이름,(2)재화,(3)가격,(4)구매 제한,(5)스텝 정보,(6)지급품,(7)개별 획득 아이템,(8)판매 기간}
             // 대분류 작성
-            workSheet.Cells[writeRow, bigCategory] = $"{itemData[1]}";
+            if (itemData[5] == "-")
+                workSheet.Cells[writeRow, bigCategory] = $"{itemData[1]}";
+            else
+                workSheet.Cells[writeRow, bigCategory] = $"{itemData[1]}\n{itemData[5]}";
             // 소분류와 확인 항목 작성
             workSheet.Cells[writeRow, firstCol] = $"상품명";
             workSheet.Cells[writeRow, SecondCol] = $"상품명 출력 확인";
@@ -311,26 +314,36 @@ namespace AutomationForms
 
             workSheet.Cells[writeRow, firstCol] = "돋보기\r\n> 개별 획득 아이템\r\n목록 출력 및 상세 정보 확인";
             tempWords = itemData[7].Split("\n");
-            tempRow = writeRow;
-            foreach (string word in tempWords)
+            if (tempString.Contains("사용 시 아래 아이템 획득"))
             {
-                if (word.Contains("사용 시 아래 아이템 획득")) { continue; }
-                workSheet.Cells[writeRow, SecondCol] = word;
+                tempRow = writeRow;
+                foreach (string word in tempWords)
+                {
+                    if (word.Contains("사용 시 아래 아이템 획득")) { continue; }
+                    workSheet.Cells[writeRow, SecondCol] = word;
+                    writeRow = writeRow + 1;
+                }
+                workSheet.Range[workSheet.Cells[tempRow, firstCol], workSheet.Cells[writeRow - 1, firstCol]].Merge();
+            }
+            else
+            {
+                workSheet.Cells[writeRow, SecondCol] = itemData[7];
                 writeRow = writeRow + 1;
             }
-            workSheet.Range[workSheet.Cells[tempRow, firstCol], workSheet.Cells[writeRow - 1, firstCol]].Merge();
-
             workSheet.Cells[writeRow, firstCol] = $"지급 상품 상세 정보";
             workSheet.Cells[writeRow, SecondCol] = $"[지급 상품 상세 정보] 선택하여 상세 정보 출력 확인";
             tempRow = writeRow;
             writeRow = writeRow + 1;
             workSheet.Cells[writeRow, SecondCol] = $"{itemData[7]}";
             writeRow = writeRow + 1;
-            foreach (string word in tempWords)
+            if (tempString.Contains("사용 시 아래 아이템 획득"))
             {
-                if (word.Contains("사용 시 아래 아이템 획득")) { continue; }
-                workSheet.Cells[writeRow, SecondCol] = word;
-                writeRow = writeRow + 1;
+                foreach (string word in tempWords)
+                {
+                    if (word.Contains("사용 시 아래 아이템 획득")) { continue; }
+                    workSheet.Cells[writeRow, SecondCol] = word;
+                    writeRow = writeRow + 1;
+                }
             }
             workSheet.Range[workSheet.Cells[tempRow, firstCol], workSheet.Cells[writeRow - 1, firstCol]].Merge();
 
@@ -351,10 +364,18 @@ namespace AutomationForms
             workSheet.Cells[writeRow, SecondCol] = $"인벤토리 슬롯 정렬/삭제/이동 후 패키지 아이템 사용했을 때 아이템 정상 습득 확인";
             tempRow = writeRow;
             writeRow = writeRow + 1;
-            foreach (string word in tempWords)
+            if (tempString.Contains("사용 시 아래 아이템 획득"))
             {
-                if (word.Contains("사용 시 아래 아이템 획득")) { continue; }
-                workSheet.Cells[writeRow, SecondCol] = word;
+                foreach (string word in tempWords)
+                {
+                    if (word.Contains("사용 시 아래 아이템 획득")) { continue; }
+                    workSheet.Cells[writeRow, SecondCol] = word;
+                    writeRow = writeRow + 1;
+                }
+            }
+            else
+            {
+                workSheet.Cells[writeRow, SecondCol] = itemData[1];
                 writeRow = writeRow + 1;
             }
             workSheet.Cells[writeRow, SecondCol] = $"+ 아이템 사용 확인";
