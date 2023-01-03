@@ -54,7 +54,7 @@ namespace AutomationForms
             object[,] craftData;
             try
             {
-                if (passWord == "")
+                if (checkBox1.Checked)
                 {
                     workBook = excelApp.Workbooks.Open(label1.Text);
                 }
@@ -64,15 +64,36 @@ namespace AutomationForms
                 }
                 // 기획서에서 값 추출
                 workSheet = workBook.Worksheets.get_Item(1) as Excel.Worksheet;
+                if (workSheet is not null)
+                {
+                    if (workSheet.Name.Contains("BM") == false)
+                    {
+                        workSheet = workBook.Worksheets.get_Item(2) as Excel.Worksheet;
+                    }
+                }
                 List<List<String>> BMitemData;
-                readData(workSheet, out BMitemData);
+                readData(workSheet, out BMitemData, checkBox1.Checked);
                 // 아이템 시트 읽기
                 itemWorkSheet = workBook.Worksheets.get_Item(2) as Excel.Worksheet;
+                if (itemWorkSheet is not null)
+                {
+                    if (itemWorkSheet.Name.Contains("아이템") == false)
+                    {
+                        itemWorkSheet = workBook.Worksheets.get_Item(3) as Excel.Worksheet;
+                    }
+                }
                 string week = comboBox1.Text;
-                ReadWriteItem.readItem(itemWorkSheet, out itemData, week);
+                ReadWriteItem.readItem(itemWorkSheet, out itemData, week, checkBox1.Checked);
                 // 제작 시트 읽기
                 craftWorkSheet = workBook.Worksheets.get_Item(3) as Excel.Worksheet;
-                ReadWriteCraft.readCraft(craftWorkSheet, out craftData, week);
+                if (craftWorkSheet is not null) 
+                { 
+                    if (craftWorkSheet.Name.Contains("제작") == false)
+                    {
+                        craftWorkSheet = workBook.Worksheets.get_Item(4) as Excel.Worksheet;
+                    }
+                }
+                ReadWriteCraft.readCraft(craftWorkSheet, out craftData, week, checkBox1.Checked);
                 // 기획서 닫기
                 workBook.Close(false);
                 // 새 파일 만들어서 추출한 값 입력
@@ -85,11 +106,11 @@ namespace AutomationForms
                 // 아이템 시트 생성 및 아이템 체크리스트 작성 
                 itemWorkSheet = newWorkBook.Sheets.Add(Type.Missing, After: newWorkBook.Sheets[newWorkBook.Sheets.Count]);
                 itemWorkSheet.Name = "아이템";
-                ReadWriteItem.writeItem(ref itemWorkSheet, itemData);
+                ReadWriteItem.writeItem(ref itemWorkSheet, itemData, checkBox1.Checked);
                 // 제작 시트 생성 및 제작 체크리스트 작성
                 craftWorkSheet = newWorkBook.Sheets.Add(Type.Missing, After: newWorkBook.Sheets[newWorkBook.Sheets.Count]);
                 craftWorkSheet.Name = "제작";
-                ReadWriteCraft.writeCraft(ref craftWorkSheet, craftData);
+                ReadWriteCraft.writeCraft(ref craftWorkSheet, craftData, checkBox1.Checked);
                 // 자동화 시트, 컬렉션 시트 생성
                 automateWorkSheet = newWorkBook.Sheets.Add(Type.Missing, After: newWorkBook.Sheets[newWorkBook.Sheets.Count]);
                 automateWorkSheet.Name = "자동화";
@@ -97,15 +118,19 @@ namespace AutomationForms
                 collectionWorkSheet.Name = "컬렉션";
                 // 새 파일 저장
                 String saveFilePath = label6.Text + label4.Text;
+                if (checkBox1.Checked)
+                {
+                    saveFilePath = label6.Text + label4.Text +"_FAFU";
+                }
                 newWorkBook.SaveAs(saveFilePath);
                 // Exit from the application  
                 newWorkBook.Close();
                 excelApp.Quit();
                 MessageBox.Show("BM체크리스트 생성 완료.");
             }
-            catch (Exception)
+            catch (Exception e)
             {                
-                MessageBox.Show("비밀번호 오입력.");
+                MessageBox.Show($"{e}");
             }
             finally
             {
@@ -120,11 +145,20 @@ namespace AutomationForms
             }
         }
 
-        private void readData(Worksheet workSheet, out List<List<String>> BMitemData)
+        private void readData(Worksheet workSheet, out List<List<String>> BMitemData, bool checkbox)
         {
             BMitemData = new List<List<String>>();
             // 기획서에서 필요한 컬럼을 찾아서 루프돌면서 해당 컬럼값을 리스트에 담아 return
-            int[] colNums = {4, 5, 6, 7, 8, 9, 11, 12, 13};
+            int[] colNums;
+            if (checkbox)
+            {
+                // itemData{(0)Sub Category,(1)상품 이름,(2)재화,(3)가격,(4)구매 제한,(5)스텝 정보,(6)지급품,(7)개별 획득 아이템,(8)판매 기간}
+                colNums = new int[] { 5, 6, 7, 8, 11, 12, 14, 15, 17 };
+            }
+            else
+            {
+                colNums = new int[] { 4, 5, 6, 7, 8, 9, 11, 12, 13 };
+            }
 
             // 데이터 끝줄 확인
             Excel.Range rng = workSheet.UsedRange;

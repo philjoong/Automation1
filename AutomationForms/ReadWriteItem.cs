@@ -12,12 +12,17 @@ namespace AutomationForms
 {
     internal static class ReadWriteItem
     {
-        public static void readItem(Worksheet workSheet, out object[,] itemData, string week)
+        public static void readItem(Worksheet workSheet, out object[,] itemData, string week, bool checkbox)
         {
             // 기획서에서 필요한 행부터 데이터가 들어간 range를 통째로 return\
             // F열부터 J열까지가 기획서에서 필요한 열
-            int colStart = 6; // F열
-            int colEnd = 10; // J열
+            int colStart = 5; // E열
+            int colEnd = 9; // I열
+            if (checkbox)
+            {
+                colStart = 5; // E열
+                colEnd = 15; // O열
+            }
             Range firstColRange = workSheet.Columns[1];
             object[,] data = (object[,])firstColRange.Value;
             Range usedRange = workSheet.UsedRange;
@@ -41,37 +46,83 @@ namespace AutomationForms
             Range rng = workSheet.Range[workSheet.Cells[startRow, colStart], workSheet.Cells[dataLength, colEnd]];
             itemData = (object[,])rng.Value;
         }
-        public static void writeItem(ref Worksheet workSheet, object[,] itemData)
+        public static void writeItem(ref Worksheet workSheet, object[,] itemData, bool checkbox)
         {
             int writeRow = 1;
-            workSheet.Cells[writeRow, 2] = $"int ID";
-            workSheet.Cells[writeRow, 3] = $"Item Name";
-            workSheet.Cells[writeRow, 4] = $"아이템명";
-            workSheet.Cells[writeRow, 5] = $"효과";
-            workSheet.Cells[writeRow, 6] = $"아이템\n삭제 예정일";
-            workSheet.Cells[writeRow, 7] = $"아이템명";
-            workSheet.Cells[writeRow, 8] = $"상세 설명";
-            workSheet.Cells[writeRow, 9] = $"아이템 삭제일";
-            workSheet.Cells[writeRow, 10] = $"구성품_삭제\n일>= 패키지";
-            workSheet.Cells[writeRow, 11] = $"아이콘";
-            workSheet.Cells[writeRow, 12] = $"등급";
-            workSheet.Cells[writeRow, 13] = $"무게=0";
-            workSheet.Cells[writeRow, 14] = $"창고 불가";
-            workSheet.Cells[writeRow, 15] = $"삭제 불가";
-            workSheet.Cells[writeRow, 16] = $"거래 불가";
-            workSheet.Cells[writeRow, 17] = $"판매 불가\n(매입 상인)";
-            workSheet.Cells[writeRow, 18] = $"결과_\n아이템사용";
-            workSheet.Cells[writeRow, 19] = $"사용 효과\n(구성품/ 효과)";
-            workSheet.Cells[writeRow, 20] = $"아이템일괄사용";
-            workSheet.Cells[writeRow, 21] = $"퀵슬롯\n자동 사용";
-            workSheet.Cells[writeRow, 22] = $"소환권\n사용 효과 확인";
-            workSheet.Cells[writeRow, 23] = $"소환권일 경우\n가챠 테이블\n확인 필요";
-            workSheet.Cells[writeRow, 24] = $"데이터";
-            workSheet.Cells[writeRow, 25] = $"지라";
-            workSheet.Cells[writeRow, 26] = $"비고";
-            
+            if (checkbox)
+            {
+                workSheet.Cells[writeRow, 2] = $"int ID";
+                workSheet.Cells[writeRow, 3] = $"Item Name";
+                workSheet.Cells[writeRow, 4] = $"";
+                workSheet.Cells[writeRow, 5] = $"아이템명";
+                workSheet.Cells[writeRow, 6] = $"효과";
+                workSheet.Cells[writeRow, 7] = $"아이템\n삭제 예정일";
+                workSheet.Cells[writeRow, 8] = $"아이콘명";
+                workSheet.Cells[writeRow, 9] = $"창고 보관 설정";
+                workSheet.Cells[writeRow, 10] = $"거래소 등록";
+                workSheet.Cells[writeRow, 11] = $"판매 가능";
+                workSheet.Cells[writeRow, 12] = $"삭제 가능";
+                workSheet.Cells[writeRow, 13] = $"아이템명";
+                workSheet.Cells[writeRow, 14] = $"상세 설명";
+                workSheet.Cells[writeRow, 15] = $"아이템 삭제일";
+                workSheet.Cells[writeRow, 16] = $"구성품_삭제\n일>= 패키지";
+                workSheet.Cells[writeRow, 17] = $"아이콘";
+                workSheet.Cells[writeRow, 18] = $"등급";
+                workSheet.Cells[writeRow, 19] = $"무게=0";
+                workSheet.Cells[writeRow, 20] = $"창고 불가";
+                workSheet.Cells[writeRow, 21] = $"삭제 불가";
+                workSheet.Cells[writeRow, 22] = $"거래 불가";
+                workSheet.Cells[writeRow, 23] = $"판매 불가\n(매입 상인)";
+                workSheet.Cells[writeRow, 24] = $"결과_\n아이템사용";
+                workSheet.Cells[writeRow, 25] = $"사용 효과\n(구성품/ 효과)";
+                workSheet.Cells[writeRow, 26] = $"아이템일괄사용";
+                workSheet.Cells[writeRow, 27] = $"퀵슬롯\n자동 사용";
+                workSheet.Cells[writeRow, 28] = $"소환권\n사용 효과 확인";
+                workSheet.Cells[writeRow, 29] = $"소환권일 경우\n가챠 테이블\n확인 필요";
+                workSheet.Cells[writeRow, 30] = $"데이터";
+                workSheet.Cells[writeRow, 31] = $"지라";
+                workSheet.Cells[writeRow, 32] = $"비고";
+            }
+            else
+            {
+                workSheet.Cells[writeRow, 2] = $"int ID";
+                workSheet.Cells[writeRow, 3] = $"Item Name";
+                workSheet.Cells[writeRow, 4] = $"아이템명";
+                workSheet.Cells[writeRow, 5] = $"효과";
+                workSheet.Cells[writeRow, 6] = $"아이템\n삭제 예정일";
+                workSheet.Cells[writeRow, 7] = $"아이템명";
+                workSheet.Cells[writeRow, 8] = $"상세 설명";
+                workSheet.Cells[writeRow, 9] = $"아이템 삭제일";
+                workSheet.Cells[writeRow, 10] = $"구성품_삭제\n일>= 패키지";
+                workSheet.Cells[writeRow, 11] = $"아이콘";
+                workSheet.Cells[writeRow, 12] = $"등급";
+                workSheet.Cells[writeRow, 13] = $"무게=0";
+                workSheet.Cells[writeRow, 14] = $"창고 불가";
+                workSheet.Cells[writeRow, 15] = $"삭제 불가";
+                workSheet.Cells[writeRow, 16] = $"거래 불가";
+                workSheet.Cells[writeRow, 17] = $"판매 불가\n(매입 상인)";
+                workSheet.Cells[writeRow, 18] = $"결과_\n아이템사용";
+                workSheet.Cells[writeRow, 19] = $"사용 효과\n(구성품/ 효과)";
+                workSheet.Cells[writeRow, 20] = $"아이템일괄사용";
+                workSheet.Cells[writeRow, 21] = $"퀵슬롯\n자동 사용";
+                workSheet.Cells[writeRow, 22] = $"소환권\n사용 효과 확인";
+                workSheet.Cells[writeRow, 23] = $"소환권일 경우\n가챠 테이블\n확인 필요";
+                workSheet.Cells[writeRow, 24] = $"데이터";
+                workSheet.Cells[writeRow, 25] = $"지라";
+                workSheet.Cells[writeRow, 26] = $"비고";
+            }
+
+            int lastColNum;
+            if (checkbox)
+            {
+                lastColNum = 32;
+            }
+            else
+            {
+                lastColNum = 26;
+            }
             // tablehead에 검은 바탕색에 흰글씨 설정
-            Range headRange = workSheet.Range[workSheet.Cells[writeRow, 2], workSheet.Cells[writeRow, 26]];
+            Range headRange = workSheet.Range[workSheet.Cells[writeRow, 2], workSheet.Cells[writeRow, lastColNum]];
             headRange.Font.Color = Color.FromArgb(255, 255, 255);
             headRange.Interior.Color = Color.FromArgb(0, 0, 0);
             headRange.Font.Bold = true;
@@ -83,9 +134,13 @@ namespace AutomationForms
             // F열부터 J열까지 기획서에서 긁어왔기 때문에 동일 크기 range 설정
             string tempString;
             double? tempDouble;
+            bool? tempBool;
+            int tempLength = 6;
+            if (checkbox)
+                tempLength = 12;
             for (int i = 1; i < dataLength + 1; i++)
             {
-                for (int j = 1; j < 6; j++)
+                for (int j = 1; j < tempLength; j++)
                 {
                     if (itemData[i, j] is string)
                     {
@@ -96,6 +151,11 @@ namespace AutomationForms
                     {
                         tempDouble = itemData[i, j] as double?;
                         workSheet.Cells[i + writeRow - 1, j + 1] = tempDouble;
+                    }
+                    else if (itemData[i, j] is bool)
+                    {
+                        tempBool = itemData[i, j] as bool?;
+                        workSheet.Cells[i + writeRow - 1, j + 1] = tempBool;
                     }
                     else
                     {
