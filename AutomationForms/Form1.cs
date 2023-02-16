@@ -150,6 +150,8 @@ namespace AutomationForms
             BMitemData = new List<List<String>>();
             // 기획서에서 필요한 컬럼을 찾아서 루프돌면서 해당 컬럼값을 리스트에 담아 return
             int[] colNums;
+            // 일본 대만 행을 따로 담아서 아래 list.Add(temp);할 때 스킵
+            int JPTWcolNums = 3;
             if (checkbox)
             {
                 // itemData{(0)Sub Category,(1)상품 이름,(2)재화,(3)가격,(4)구매 제한,(5)스텝 정보,(6)지급품,(7)개별 획득 아이템,(8)판매 기간}
@@ -190,6 +192,19 @@ namespace AutomationForms
                 {
                     List<String> list = new List<String>();
                     string? temp;
+                    //JPTW 행 스킵
+                    if (checkbox) 
+                    {
+                        if (data[i, JPTWcolNums] is string)
+                        {
+                            temp = data[i, JPTWcolNums] as string;
+                            if (temp == "일본" | temp =="대만")
+                            {
+                                continue;
+                            }
+                        }
+                    }
+
                     foreach(int colNum in colNums)
                     {
                         if (data[i, colNum] is string)
