@@ -152,6 +152,8 @@ namespace AutomationForms
             int[] colNums;
             // 일본 대만 행을 따로 담아서 아래 list.Add(temp);할 때 스킵
             int JPTWcolNums = 3;
+            // 파푸 BM 체크리스트 마지막 행이 비어있어서 해당 행 체크리스트에서 제거하기 위해 추가
+            int FAFULastRow = 6;
             if (checkbox)
             {
                 // itemData{(0)Sub Category,(1)상품 이름,(2)재화,(3)가격,(4)구매 제한,(5)스텝 정보,(6)지급품,(7)개별 획득 아이템,(8)판매 기간}
@@ -202,6 +204,10 @@ namespace AutomationForms
                             {
                                 continue;
                             }
+                        }
+                        else if (data[i, FAFULastRow] is null)
+                        {
+                            continue;
                         }
                     }
 
