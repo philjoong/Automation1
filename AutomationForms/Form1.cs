@@ -391,6 +391,8 @@ namespace AutomationForms
             writeRow = writeRow + 1;
             workSheet.Cells[writeRow, SecondCol] = $"{itemData[7]}";
             writeRow = writeRow + 1;
+            workSheet.Cells[writeRow, SecondCol] = "아이템 리스트 우측 돋보기 아이콘으로 사용 시 획득 가능한 아이템/클래스/아가시온/집혼 안내 확인";
+            writeRow = writeRow + 1;
             if (tempString.Contains("사용 시 아래 아이템 획득"))
             {
                 foreach (string word in tempWords)
