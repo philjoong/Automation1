@@ -52,11 +52,13 @@ namespace AutomationForms
             Worksheet? collectionWorkSheet = null;
             object[,] itemData;
             object[,] craftData;
+            string workSheetName = "일반_";
             try
             {
                 if (checkBox1.Checked)
                 {
                     workBook = excelApp.Workbooks.Open(label1.Text);
+                    workSheetName = "파푸_";
                 }
                 else
                 {
@@ -101,21 +103,21 @@ namespace AutomationForms
                 //workSheet = newWorkBook.Worksheets.Add(Type.Missing) as Worksheet;
                 workSheet = newWorkBook.Sheets["Sheet1"] as Excel.Worksheet;
                 //workSheet = newWorkBook.ActiveSheet as Excel.Worksheet;
-                workSheet.Name = "상점";
+                workSheet.Name = workSheetName + "상점";
                 writeData(ref workSheet, BMitemData);
                 // 아이템 시트 생성 및 아이템 체크리스트 작성 
                 itemWorkSheet = newWorkBook.Sheets.Add(Type.Missing, After: newWorkBook.Sheets[newWorkBook.Sheets.Count]);
-                itemWorkSheet.Name = "아이템";
+                itemWorkSheet.Name = workSheetName + "아이템";
                 ReadWriteItem.writeItem(ref itemWorkSheet, itemData, checkBox1.Checked);
                 // 제작 시트 생성 및 제작 체크리스트 작성
                 craftWorkSheet = newWorkBook.Sheets.Add(Type.Missing, After: newWorkBook.Sheets[newWorkBook.Sheets.Count]);
-                craftWorkSheet.Name = "제작";
+                craftWorkSheet.Name = workSheetName + "제작";
                 ReadWriteCraft.writeCraft(ref craftWorkSheet, craftData, checkBox1.Checked);
                 // 자동화 시트, 컬렉션 시트 생성
                 automateWorkSheet = newWorkBook.Sheets.Add(Type.Missing, After: newWorkBook.Sheets[newWorkBook.Sheets.Count]);
-                automateWorkSheet.Name = "자동화";
+                automateWorkSheet.Name = workSheetName + "자동화";
                 collectionWorkSheet = newWorkBook.Sheets.Add(Type.Missing, After: newWorkBook.Sheets[newWorkBook.Sheets.Count]);
-                collectionWorkSheet.Name = "컬렉션";
+                collectionWorkSheet.Name = workSheetName + "컬렉션";
                 // 새 파일 저장
                 String saveFilePath = label6.Text + label4.Text;
                 if (checkBox1.Checked)
@@ -152,12 +154,14 @@ namespace AutomationForms
             int[] colNums;
             // 일본 대만 행을 따로 담아서 아래 list.Add(temp);할 때 스킵
             int JPTWcolNums = 3;
+            int weekNameCol = 1;
             // 파푸 BM 체크리스트 마지막 행이 비어있어서 해당 행 체크리스트에서 제거하기 위해 추가
-            int FAFULastRow = 6;
+            int ProductName = 5;
             if (checkbox)
             {
                 // itemData{(0)Sub Category,(1)상품 이름,(2)재화,(3)가격,(4)구매 제한,(5)스텝 정보,(6)지급품,(7)개별 획득 아이템,(8)판매 기간}
                 colNums = new int[] { 5, 6, 7, 8, 11, 12, 14, 15, 17 };
+                ProductName = 6;
             }
             else
             {
@@ -173,6 +177,17 @@ namespace AutomationForms
             //string category = workSheet.Cells[3, 5].value;
             // 주차 확인하여 시작 행 확인
             string week = comboBox1.Text;
+            string nextWeek = "";
+            if (week == "1주차")
+                nextWeek = "2주차";
+            else if (week == "2주차")
+                nextWeek = "3주차";
+            else if (week == "3주차")
+                nextWeek = "4주차";
+            else if (week == "4주차")
+                nextWeek = "5주차";
+            else if (week == "5주차")
+                nextWeek = "6주차";
             bool startRow = false;
             for (int i = 1; i <= dataLength; i++)
             {
@@ -194,6 +209,20 @@ namespace AutomationForms
                 {
                     List<String> list = new List<String>();
                     string? temp;
+                    //주차 넘어가면 리스트에 그만 넣고 다음 COLUME으로 CONTINUE
+                    if (data[i, weekNameCol] is string)
+                    {
+                        temp = data[i, 1] as string;
+                        if (temp == nextWeek)
+                        {
+                            break;
+                        }
+                    }
+                    //상품 이름이 없으면 스킵
+                    if (data[i, ProductName] is null)
+                    {
+                        continue;
+                    }
                     //JPTW 행 스킵
                     if (checkbox) 
                     {
@@ -205,17 +234,14 @@ namespace AutomationForms
                                 continue;
                             }
                         }
-                        else if (data[i, FAFULastRow] is null)
-                        {
-                            continue;
-                        }
                     }
 
+
                     foreach(int colNum in colNums)
-                    {
+                    {    
                         if (data[i, colNum] is string)
                         {
-                            temp = data[i, colNum] as string;
+                            temp = data[i, colNum] as string;             
                             list.Add(temp);
                         }
                         else if(data[i, colNum] is double)
@@ -369,7 +395,7 @@ namespace AutomationForms
 
             workSheet.Cells[writeRow, firstCol] = "돋보기\r\n> 개별 획득 아이템\r\n목록 출력 및 상세 정보 확인";
             tempWords = itemData[7].Split("\n");
-            if (tempString.Contains("사용 시 아래 아이템 획득"))
+            if (itemData[7].Contains("사용 시 아래 아이템 획득"))
             {
                 tempRow = writeRow;
                 foreach (string word in tempWords)
