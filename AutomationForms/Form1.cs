@@ -165,7 +165,7 @@ namespace AutomationForms
             }
             else
             {
-                colNums = new int[] { 4, 5, 6, 7, 8, 9, 11, 12, 13 };
+                colNums = new int[] { 4, 5, 6, 7, 8, 9, 11, 13, 14 };
             }
 
             // 데이터 끝줄 확인
@@ -179,7 +179,7 @@ namespace AutomationForms
             string week = comboBox1.Text;
             string nextWeek = "";
             if (week == "1주차")
-                nextWeek = "2주차";
+                nextWeek = "6주차";
             else if (week == "2주차")
                 nextWeek = "3주차";
             else if (week == "3주차")
